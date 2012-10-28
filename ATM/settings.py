@@ -1,7 +1,11 @@
 # Django settings for ATM project.
 
+ROOT_DIR = "/home/tools/releases/ATM"
+LOG_DIR = ROOT_DIR + "/logs"
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -29,6 +33,7 @@ TIME_ZONE = 'Asia/Shanghai'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'zh-cn'
+DEFAULT_CHARSET = 'utf-8'
 
 SITE_ID = 1
 

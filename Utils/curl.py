@@ -27,7 +27,7 @@ class Curl(object):
         self.postData = []
         self.httpHeaders = [
             'Accepet:*/*',
-            'Accept-Charset:GBK,utf-8;q=0.7,*;q=0.3',
+            'Accept-Charset:utf-8;q=0.7,*;q=0.3',
             'Accept-Encoding:gzip,deflate,sdch',
             'Accept-Language:zh-CN,zh;q=0.8'
         ]
@@ -119,10 +119,35 @@ class Curl(object):
         return self.header
 
     def getHttpContent(self):
-        return self.content
+        return self.__content_decode(self.content)
 
     def getTotalTime(self):
         return self.totalTime
+
+    def __content_decode(self, content):
+        try:
+            if self.contentType:
+                m = re.findall('charset=(.*)$', self.contentType)
+                if m:
+                    content = content.decode(m[0])
+                else:
+                    content = content.decode('utf-8')
+            else:
+                try:
+                    content = content.decode('utf-8')
+                except Exception, ex:
+                    content = content.decode('gb2312')
+        except Exception, ex:
+            try:
+                m = re.findall("charset=(\w+)", content)
+                if m :
+                    content = content.decode(m[0])
+                else:
+                    #DECODING ERROR
+                    content = None
+            except Exception, ex:
+                pass
+        return content
 
     def verifyTotalTime(self, totaltime):
         if self.getTotalTime() > totaltime:
@@ -144,27 +169,6 @@ class Curl(object):
 
     def verifyContent(self, pattern):
         content = self.getHttpContent()
-        try:
-            if self.contentType:
-                m = re.findall('charset=(.*)$', self.contentType)
-                if m:
-                    content = content.decode(m[0])
-                else:
-                    content = content.decode('utf-8')
-            else:
-                try:
-                    content = content.decode('utf-8')
-                except Exception, ex:
-                    content = content.decode('gb2312')
-        except Exception, ex:
-            try:
-                m = re.findall("charset=(\w+)", content)
-                if m :
-                    content = content.decode(m[0])
-                else:
-                    content = "[BUG! MONITOR SYSTEM DECODING ERROR!]" + str(ex)
-            except Exception, ex:
-                pass
         re_obj = re.compile(r''+pattern)
         match = re_obj.search(content)
         if match:
@@ -189,4 +193,3 @@ class Curl(object):
         return content
 
 
-  
