@@ -60,6 +60,11 @@ class Metric(models.Model):
     neg_2 = models.IntegerField(default=0)
     neg_3 = models.IntegerField(default=0)
     neutral = models.IntegerField(default=0)
+    total = models.IntegerField(default=0)
+    open_price = models.DecimalField(max_digits=5, decimal_places=2)
+    close_price = models.DecimalField(max_digits=5, decimal_places=2)
+    high_price = models.DecimalField(max_digits=5, decimal_places=2)
+    low_price = models.DecimalField(max_digits=5, decimal_places=2)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
