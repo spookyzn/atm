@@ -32,6 +32,9 @@ class SinaVote(object):
             for i in range(0, len(items), 3):
                 data.append( items[i:i+3] )
             self.__dump(data)
+            return True
+        else:
+            return False
 
     def __dump(self, data):
         j = 1
