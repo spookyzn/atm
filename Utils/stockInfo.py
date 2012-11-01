@@ -14,7 +14,7 @@ class StockInfo(object):
         #self.date_time = 0
 
     def perform(self):
-        curl = Curl(self.url)
+        curl = Curl( str(self.url) )
         curl.perform(False)
         if curl.getHttpReturnCode() == 200:
             value_re_obj = re.compile(r"\"(.+?)\"", re.S)

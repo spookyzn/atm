@@ -21,7 +21,7 @@ class SinaVote(object):
         }
 
     def perform(self):
-        curl = Curl(self.url)
+        curl = Curl( str(self.url) )
         curl.perform(False)
         if curl.getHttpReturnCode() == 200:
             #table_re_obj = re.compile(r"<table.+?bgcolor=#b18a02.+?>.*</table>", re.S)
@@ -32,9 +32,6 @@ class SinaVote(object):
             for i in range(0, len(items), 3):
                 data.append( items[i:i+3] )
             self.__dump(data)
-            return True
-        else:
-            return False
 
     def __dump(self, data):
         j = 1
@@ -44,7 +41,7 @@ class SinaVote(object):
                 total = 0
                 for x in xrange(7):
                     key = data[i+x][0]
-                    value = int(data[i+x][2])
+                    value = int( data[i+x][2].replace(",", "") )
                     total += value
                     self.daily[self.vote_map[key]] = value
                     self.daily['total'] = total
@@ -53,7 +50,7 @@ class SinaVote(object):
                 total = 0
                 for x in xrange(7):
                     key = data[i+x][0]
-                    value = int(data[i+x][2])
+                    value = int( data[i+x][2].replace(",", "") )
                     total += value
                     self.weekly[self.vote_map[key]] = value
                     self.weekly['total'] = total
@@ -62,7 +59,7 @@ class SinaVote(object):
                 total = 0
                 for x in xrange(7):
                     key = data[i+x][0]
-                    value = int(data[i+x][2])
+                    value = int( data[i+x][2].replace(",", "") )
                     total += value
                     self.monthly[self.vote_map[key]] = value
                     self.monthly['total'] = total
@@ -71,7 +68,7 @@ class SinaVote(object):
 
 
 if __name__ == '__main__':
-    a = SinaVote("sz000007")
+    a = SinaVote("sz000100")
     a.perform()
     print a.daily
     print a.weekly

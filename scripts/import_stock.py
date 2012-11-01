@@ -12,7 +12,7 @@ sys.path.append('/home/tools/releases/ATM')
 from ATM import settings
 from Main.models import Stock, Category, StockType
 
-LOG_FILE = settings.LOG_DIR + "/fetch_error.log"
+LOG_FILE = settings.LOG_DIR + "/import_stock.log"
 
 logger = logging.getLogger()
 hdlr = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1000000, backupCount=5)

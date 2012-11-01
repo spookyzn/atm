@@ -70,5 +70,13 @@ class Metric(models.Model):
     class Meta:
         db_table = u'metric'
 
+class Summary(models.Model):
+    stock = models.ForeignKey(Stock)
+    rate = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = u'summary'
+
+
 
 
