@@ -61,6 +61,7 @@ class Metric(models.Model):
     neg_3 = models.IntegerField(default=0)
     neutral = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
+    focus = models.IntegerField(default=0)
     open_price = models.DecimalField(max_digits=5, decimal_places=2)
     close_price = models.DecimalField(max_digits=5, decimal_places=2)
     high_price = models.DecimalField(max_digits=5, decimal_places=2)
@@ -73,6 +74,7 @@ class Metric(models.Model):
 class Summary(models.Model):
     stock = models.ForeignKey(Stock)
     rate = models.IntegerField(default=0)
+    focus = models.IntegerField(default=0)
 
     class Meta:
         db_table = u'summary'

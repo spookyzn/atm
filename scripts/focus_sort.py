@@ -12,11 +12,9 @@ os.environ['LD_LIBRARY_PATH'] = '/home/tools/python/lib'
 sys.path.append('/home/tools/releases/ATM')
 from ATM import settings
 from Main.models import Stock, Category, StockType, Summary, Metric
-from Utils.stockInfo import StockInfo
-from Utils.sinaVote import SinaVote
 from Utils.hexunFocus import HexunFocus
 
-LOG_FILE = settings.LOG_DIR + "/stock_summary.log"
+LOG_FILE = settings.LOG_DIR + "/focus_sort.log"
 
 logger = logging.getLogger()
 hdlr = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=9000000, backupCount=5)
@@ -38,7 +36,7 @@ class Consumer(multiprocessing.Process):
             if item is None:
                 print "Process %d is done" % self.pid
                 break
-            #run the job
+                #run the job
             item()
             self.input_q.task_done()
             time.sleep(0.5)
@@ -53,72 +51,25 @@ class StockFetch(object):
         print "[fetch] %s" % sid
         logger.info("[fetch] %s" % sid)
         try:
-            vote = SinaVote(sid)
-            vote.perform()
-            month_summary_data = vote.monthly
-            daily_summary_data = vote.daily
-            logger.info("[%s] %s" % (sid, daily_summary_data.__str__()))
-            rate = self.__get_rate(month_summary_data)
-
-            #fetch stock info
-            stockInfo = StockInfo(sid)
-            stockInfo.perform()
-
-            #fetch hexun focus
+            #hexun foucs stock info
             hexunFocus = HexunFocus(self.stock.sid)
             hexunFocus.perform()
+            logger.info("[%s] %d %d" % (self.stock.sid, hexunFocus.current_focus, hexunFocus.monthly_focus))
         except Exception, e:
             print "%s - Unexpected error. %s" % (sid, e.message)
             logger.critical(e.message)
             return None
 
-        #save stock daily data
-        stock_obj = Metric(
-            stock = self.stock,
-            pos_3 = daily_summary_data['pos3'],
-            pos_2 = daily_summary_data['pos2'],
-            pos_1 = daily_summary_data['pos1'],
-            neg_3 = daily_summary_data['neg3'],
-            neg_2 = daily_summary_data['neg2'],
-            neg_1 = daily_summary_data['neg1'],
-            neutral = daily_summary_data['neutral'],
-            total = daily_summary_data['total'],
-            focus = hexunFocus.current_focus,
-            open_price = stockInfo.open_price,
-            close_price = stockInfo.close_price,
-            high_price = stockInfo.high_price,
-            low_price = stockInfo.low_price,
-        )
-        stock_obj.save()
-
         #save summary data
         collection = Summary.objects.filter(stock=self.stock)
         if len(collection)>0:
             for cur in collection:
-                cur.rate = rate
-                cur.focus = hexunFocus.monthly_focus
+                cur.rate = hexunFocus.monthly_focus
                 cur.save()
         else:
-            summary = Summary(stock=self.stock, rate=rate, focus=hexunFocus.monthly_focus)
+            summary = Summary(stock=self.stock, rate=hexunFocus.monthly_focus)
             summary.save()
 
-
-    def __get_rate(self, summary_data):
-        rate = 0
-        for k,v in summary_data.items():
-            if k == 'pos3':
-                rate += 3*v
-            elif k == 'pos2':
-                rate += 2*v
-            elif k == 'pos1':
-                rate += 1*v
-            elif k == 'neg1':
-                rate += -1*v
-            elif k == 'neg2':
-                rate += -2*v
-            elif k == 'neg3':
-                rate += -3*v
-        return rate
 
 
 if __name__ == '__main__':
