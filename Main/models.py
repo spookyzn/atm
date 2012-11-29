@@ -1,6 +1,7 @@
 #coding=utf-8
-
+from django.utils.dateparse import parse_date
 from django.db import models
+from django.db import connection
 
 #category
 class Category(models.Model):
@@ -28,7 +29,6 @@ class StockType(models.Model):
         db_table = u'stocktype'
         verbose_name = "市场"
 
-
 #Stock table
 class Stock(models.Model):
     sid = models.CharField(max_length=6, primary_key=True, verbose_name="股票代码")
@@ -49,6 +49,26 @@ class Stock(models.Model):
         db_table = u'stock'
         verbose_name = "股票"
 
+class MetricManager(models.Manager):
+    #list total amount of "focus" grouped by day from startDate to endDate
+    def daily_count(self, startDate, endDate):
+        #date validation
+        if not parse_date(startDate) or not parse_date(endDate):
+            return None
+        cursor = connection.cursor()
+        cursor.execute("""
+            select date(created),sum(focus),sum(total)
+            from metric
+            where date(created)>='%s' and date(created)<='%s'
+            group by date(created)""" % (startDate, endDate))
+        result_list = []
+        for row in cursor.fetchall():
+            p = self.model()
+            p.date = row[0].strftime('%Y-%m-%d')
+            p.focus = row[1]
+            p.comment = row[2]
+            result_list.append(p)
+        return result_list
 
 #Metric data
 class Metric(models.Model):
@@ -67,6 +87,8 @@ class Metric(models.Model):
     high_price = models.DecimalField(max_digits=5, decimal_places=2)
     low_price = models.DecimalField(max_digits=5, decimal_places=2)
     created = models.DateTimeField(auto_now_add=True)
+    #Customized manager
+    summary = MetricManager()
 
     class Meta:
         db_table = u'metric'

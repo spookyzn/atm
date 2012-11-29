@@ -100,6 +100,7 @@ class StockFetch(object):
                 cur.save()
         else:
             summary = Summary(stock=self.stock, rate=rate, focus=hexunFocus.monthly_focus)
+            #summary = Summary(stock=self.stock, rate=rate)
             summary.save()
 
 

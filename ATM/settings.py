@@ -1,7 +1,10 @@
 # Django settings for ATM project.
 
 ROOT_DIR = "/home/tools/releases/ATM"
+RESOURCE_DIR = ROOT_DIR + "/resources"
+TEMPLATE_DIR = ROOT_DIR + "/templates"
 LOG_DIR = ROOT_DIR + "/logs"
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -109,7 +112,7 @@ ROOT_URLCONF = 'ATM.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'ATM.wsgi.application'
 
-TEMPLATE_DIRS = ('F:/Projects/ATM/templates',)
+TEMPLATE_DIRS = (TEMPLATE_DIR,)
 
 INSTALLED_APPS = (
     'django.contrib.auth',

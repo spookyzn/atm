@@ -14,7 +14,7 @@ from gzip import GzipFile
 import urllib
 
 class Curl(object):
-    def __init__(self, url, hostname="", timeout=30):
+    def __init__(self, url, hostname="", timeout=60):
         if timeout:
             self.timeout = timeout
         else:
